@@ -68,9 +68,13 @@ namespace SnapmaticStudio
 
 
         private List<Snap> snapList = new List<Snap>();
-        private bool isTitleSorted = false;
-        private bool isFileSorted = false;
-        private bool isDateSorted = false;
+        //list sorting helpers
+        //private bool isTitleSorted = false;
+        //private bool isFileSorted = false;
+        //private bool isDateSorted = false;
+        private int firstSortColumn = -1;
+        private int secondSortColumn = 0;
+        private bool reverseSort = false;
         private bool sortingNow = false;
 
 
@@ -243,11 +247,20 @@ namespace SnapmaticStudio
 
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
+            if (firstSortColumn != e.Column)
+            {
+                reverseSort = false;
+                secondSortColumn = firstSortColumn;
+            }
+            else { reverseSort = !reverseSort; }
+
+            firstSortColumn = e.Column;
             sortingNow = true;
+            
             listView1.BeginUpdate();
             //listView1.SelectedIndices.Clear();
 
-            switch (e.Column)
+            /*switch (e.Column)
             {
                 case 0:
                     if (isTitleSorted) { snapList.Reverse(); }
@@ -276,6 +289,34 @@ namespace SnapmaticStudio
                         isDateSorted = true;
                         isTitleSorted = isFileSorted = false;
                     }
+                    break;
+            }*/
+
+            switch (e.Column)
+            {
+                case 0:
+                    snapList.Sort(delegate (Snap a, Snap b)
+                    {
+                        int xdiff = reverseSort ? b.title.CompareTo(a.title) : a.title.CompareTo(b.title);
+                        if (xdiff != 0) return xdiff;
+                        else return secondSortColumn == 1 ? a.fileName.CompareTo(b.fileName) : a.date.CompareTo(b.date);
+                    });
+                    break;
+                case 1:
+                    snapList.Sort(delegate (Snap a, Snap b)
+                    {
+                        int xdiff = reverseSort ? b.fileName.CompareTo(a.fileName) : a.fileName.CompareTo(b.fileName);
+                        if (xdiff != 0) return xdiff;
+                        else return secondSortColumn == 2 ? a.date.CompareTo(b.date) : a.title.CompareTo(b.title);
+                    });
+                    break;
+                case 2:
+                    snapList.Sort(delegate (Snap a, Snap b)
+                    {
+                        int xdiff = reverseSort ? b.date.CompareTo(a.date) : a.date.CompareTo(b.date);
+                        if (xdiff != 0) return xdiff;
+                        else return secondSortColumn == 1 ? a.fileName.CompareTo(b.fileName) : a.title.CompareTo(b.title);
+                    });
                     break;
             }
 
@@ -558,11 +599,14 @@ namespace SnapmaticStudio
         {
             //bool vscroll = (snapList.Count * 17 + 28) > listView1.Height;
             //titleHeader.Width = listView1.Width - fileHeader.Width -dateHeader.Width - (vscroll ? 21 : 4);
-            var newWidth = listView1.ClientSize.Width - fileHeader.Width - dateHeader.Width;
-            titleHeader.Width = newWidth > 0 ? newWidth : 32;
+            //var newWidth = listView1.ClientSize.Width - fileHeader.Width - dateHeader.Width;
+            //titleHeader.Width = newWidth > 0 ? newWidth : 32;
+            var vscrollwidth = SystemInformation.VerticalScrollBarWidth;
+            var hasvscroll = ((float)snapList.Count / (float)listView1.Height) > 0.0567f;
+            titleHeader.Width = listView1.ClientSize.Width - fileHeader.Width - dateHeader.Width - (hasvscroll ? vscrollwidth : 0);
         }
 
-        private void listView1_Layout(object sender, LayoutEventArgs e)
+        /*private void listView1_Layout(object sender, LayoutEventArgs e)
         {
             resizeTitleColumn();
         }
@@ -571,6 +615,11 @@ namespace SnapmaticStudio
         {
             if (e.ColumnIndex != 0) { resizeTitleColumn(); }
             //stupid loop
+        }*/
+
+        private void splitContainer1_Panel1_Resize(object sender, EventArgs e)
+        {
+            resizeTitleColumn();
         }
 
         /*private void listView1_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
