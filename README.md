@@ -1,8 +1,5 @@
 # Snapmatic Studio#
-### Visit KotsChopShop.com or forum.XeNTaX.com for help and updates. ###
 
-
-### Introduction ###
 This is a simple application designed to preview and export pictures made with your phone in GTA V for PC.
 At the time of this writing, uploading pictures to R* Social Club was not working for some people.
 You can use this as a workaround, but it will also help if you just want to share your pictures by other means.
