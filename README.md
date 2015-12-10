@@ -47,4 +47,4 @@ You can save them in the same path as Snapmatic files or you can choose a custom
 
 The app will extract image data "as is", without altering or re-encoding it. So far I have only encountered JPEG data, but the code can handle unknown types.
 
-Snapmatic files also contain additional data that is unknown at this point. At first glance it looks like 3D data which could be somehow related to the map.
+It should be noted that Snapmatic files also contain "filler" data dumped from the GPU memory. This is a consequence of the in-game image saving process.
